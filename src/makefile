@@ -1,8 +1,14 @@
 BUILD:=../build
 SRC:=.
 
+i386=1
+# ARCH:= x64
 ENTRYPOINT:= 0x10000
 ONIX_MAGIC:= 0x20220205
+
+ifdef i386
+CFLAGS += -m32
+endif
 
 CFLAGS+= -fno-builtin # no builtin functions
 CFLAGS+= -nostdinc # no standard include files
@@ -27,11 +33,20 @@ $(BUILD)/boot/loader.bin: $(SRC)/boot/loader.asm $(BUILD)/system.bin
 	$(shell mkdir -p $(dir $@))
 	nasm $(LOADER_FLAGS) -f bin $< -o $@ 
 
+ifdef i386
+NASM_FLAGS += -f elf32
+else
+NASM_FLAGS += -f elf64
+endif
+
 $(BUILD)/%.o: $(SRC)/%.asm
 	$(shell mkdir -p $(dir $@))
-	nasm -f elf64 $(DEBUG) $< -o $@
+	nasm $(NASM_FLAGS) $(DEBUG) $< -o $@
 
-LDFLAGS:=
+ifdef i386
+LDFLAGS += -m elf_i386
+endif
+
 LDFLAGS+= -static
 LDFLAGS+= -Ttext $(ENTRYPOINT)
 LDFLAGS:=$(strip ${LDFLAGS})
