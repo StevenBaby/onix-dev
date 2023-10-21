@@ -2,8 +2,9 @@ BUILD:=../build
 SRC:=.
 
 i386=1
-# ARCH:= x64
-ENTRYPOINT:= 0x10000
+
+MULTIBOOT2:=0x8000
+ENTRYPOINT:=$(shell python -c "print(f'0x{$(MULTIBOOT2) + 0x8000:x}')")
 ONIX_MAGIC:= 0x20220205
 
 ifdef i386
@@ -27,6 +28,7 @@ $(BUILD)/boot/%.bin: $(SRC)/boot/%.asm
 
 LOADER_FLAGS:=
 LOADER_FLAGS+= -DKERNEL_SIZE=$$(stat -c%s "$(BUILD)/system.bin")
+LOADER_FLAGS+= -DTARGET_MEMORY=$(MULTIBOOT2)
 LOADER_FLAGS+= -DENTRYPOINT=$(ENTRYPOINT)
 LOADER_FLAGS+= -DONIX_MAGIC=$(ONIX_MAGIC)
 
@@ -58,6 +60,7 @@ LDFLAGS += -m elf_i386
 endif
 LDFLAGS+= -static
 LDFLAGS+= -Ttext $(ENTRYPOINT)
+LDFLAGS+= -section-start=.multiboot2=$(MULTIBOOT2)
 LDFLAGS:=$(strip ${LDFLAGS})
 
 $(BUILD)/kernel.bin: \
@@ -103,3 +106,4 @@ clean:
 
 include $(SRC)/utils/bochs.mk
 include $(SRC)/utils/qemu.mk
+include $(SRC)/utils/cdrom.mk
