@@ -19,6 +19,7 @@ CFLAGS+= -fno-stack-protector # no stack protect
 CFLAGS:=$(strip ${CFLAGS})
 
 DEBUG:= -g
+INCLUDE:=-I$(SRC)/include
 
 $(BUILD)/boot/%.bin: $(SRC)/boot/%.asm
 	$(shell mkdir -p $(dir $@))
@@ -43,16 +44,25 @@ $(BUILD)/%.o: $(SRC)/%.asm
 	$(shell mkdir -p $(dir $@))
 	nasm $(NASM_FLAGS) $(DEBUG) $< -o $@
 
+$(BUILD)/%32.o: $(SRC)/%32.c
+	$(shell mkdir -p $(dir $@))
+	gcc -m32 $(CFLAGS) $(DEBUG) $(INCLUDE) -S $< -o $@.s
+	gcc $(CFLAGS) $(DEBUG) $(INCLUDE) -c $@.s -o $@
+
+$(BUILD)/%.o: $(SRC)/%.c
+	$(shell mkdir -p $(dir $@))
+	gcc $(CFLAGS) $(DEBUG) $(INCLUDE) -c $< -o $@
+
 ifdef i386
 LDFLAGS += -m elf_i386
 endif
-
 LDFLAGS+= -static
 LDFLAGS+= -Ttext $(ENTRYPOINT)
 LDFLAGS:=$(strip ${LDFLAGS})
 
 $(BUILD)/kernel.bin: \
 	$(BUILD)/kernel/start.o \
+	$(BUILD)/kernel/setup32.o \
 
 	$(shell mkdir -p $(dir $@))
 	ld ${LDFLAGS} $^ -o $@

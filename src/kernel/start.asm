@@ -1,8 +1,10 @@
 [bits 32]
 
+extern setup_long_mode
+
 section .text
 global _start
 _start:
-    mov byte [0xb8000], 'K'
+    call setup_long_mode
 
     jmp $; block

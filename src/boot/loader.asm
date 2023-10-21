@@ -5,6 +5,41 @@ kernel_size: dd KERNEL_SIZE; kernel size
 
 ; there are real mode
 
+; print detecting memory
+mov si, detecting
+call print
+
+detect_memory:
+    ; set ebx to 0
+    xor ebx, ebx
+
+    ; es:di structure address
+    mov ax, 0
+    mov es, ax
+    mov edi, ards_buffer
+
+    mov edx, 0x534d4150; fix signature
+
+.next:
+    ; function
+    mov eax, 0xe820
+    ; ards size
+    mov ecx, 20
+    ; invoke 0x15 system call
+    int 0x15
+
+    ; if CF set, there was a error
+    jc error
+
+    ; move address to next structure
+    add di, cx
+
+    ; increase ards count
+    inc dword [ards_count]
+
+    cmp ebx, 0
+    jnz .next
+
 ; print loading message
 mov si, loading
 call print
@@ -66,8 +101,6 @@ prepare_protected_mode:
     or eax, 1
     mov cr0, eax
 
-    mov eax, ONIX_MAGIC
-    mov ebx, 0
     ; jmp to protected mode
     jmp dword code_selector:protected_mode
 
@@ -95,6 +128,8 @@ read_disk:
     jnz error
     ret
 
+detecting:
+    db "Detecting Memory...", 10, 13, 0; \n\r
 loading:
     db "Loading Onix...", 10, 13, 0; \n\r
 preparing:
@@ -136,8 +171,13 @@ protected_mode:
 
     mov esp, 0x10000; update stack top
 
+    mov eax, ONIX_MAGIC
+    mov ebx, ards_count
+
     ; jmp to kernel
     jmp code_selector:ENTRYPOINT
+
+    ud2; no way to there, error
 
 code_selector equ (1 << 3)
 data_selector equ (2 << 3)
@@ -172,3 +212,8 @@ gdt_data:
     db 0b_1_1_0_0_0000 | (memory_limit >> 16) & 0xf;
     db (memory_base >> 24) & 0xff; base 24 ~ 31 bits
 gdt_end:
+
+; address range descriptor structrue buffer
+ards_count:
+    dd 0
+ards_buffer:
