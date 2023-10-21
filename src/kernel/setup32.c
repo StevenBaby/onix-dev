@@ -6,6 +6,24 @@ static _omit_frame void code32()
     asm volatile(".code32\n");
 }
 
+static u32 crc32(void *data, int len)
+{
+    u32 crc = -1;
+    u8 *ptr = (u8 *)data;
+    for (int i = 0; i < len; i++)
+    {
+        crc ^= ptr[i];
+        for (int j = 0; j < 8; j++)
+        {
+            if (crc & 1)
+                crc = (crc >> 1) ^ 0xEDB88320;
+            else
+                crc >>= 1;
+        }
+    }
+    return ~crc;
+}
+
 // in byte
 static u8 inb(u16 port)
 {
@@ -213,8 +231,23 @@ static void console_init()
     puts("Console init in protected mode...\n");
 }
 
+extern u8 _end;
+extern u8 _start;
+
+u32 kernel_chksum;
+u32 kernel_size;
+
+static void check_system_memory()
+{
+    u32 size = &_end - &_start;
+    kernel_chksum = crc32((void *)&_start, size);
+    kernel_size = size;
+}
+
 void setup_long_mode(u32 magic, u32 addr)
 {
+    check_system_memory();
+
     console_init();
     puts("Setting up long mode...\n");
 }

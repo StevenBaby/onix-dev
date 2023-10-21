@@ -30,5 +30,13 @@
             ],
             "miDebuggerPath": "/usr/bin/gdb"
         },
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
     ]
 }

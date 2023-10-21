@@ -3,7 +3,7 @@ SRC:=.
 
 i386=1
 
-MULTIBOOT2:=0x8000
+MULTIBOOT2:=0x18000
 ENTRYPOINT:=$(shell python -c "print(f'0x{$(MULTIBOOT2) + 0x8000:x}')")
 ONIX_MAGIC:= 0x20220205
 
@@ -71,7 +71,7 @@ $(BUILD)/kernel.bin: \
 	ld ${LDFLAGS} $^ -o $@
 
 $(BUILD)/system.bin: $(BUILD)/kernel.bin
-	objcopy -O binary $< $@
+	objcopy -O binary --set-section-flags .bss=alloc,load,contents $< $@
 
 $(BUILD)/system.map: $(BUILD)/kernel.bin
 	nm $< | sort > $@
@@ -80,6 +80,7 @@ $(BUILD)/harddisk.img: \
 	$(BUILD)/boot/boot.bin \
 	$(BUILD)/boot/loader.bin \
 	$(BUILD)/system.bin \
+	$(BUILD)/system.map \
 
 	# create a harddisk image with 16M capacity 
 	yes | bximage -q -hd=16 -func=create -sectsize=512 -imgmode=flat $@
@@ -95,6 +96,8 @@ $(BUILD)/harddisk.img: \
 
 	# write system.bin to harddisk
 	dd if=$(BUILD)/system.bin of=$@ bs=512 count=1000 seek=10 conv=notrunc
+
+	python $(SRC)/utils/chksum.py
 
 IMAGES:= $(BUILD)/harddisk.img
 
