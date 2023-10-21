@@ -77,7 +77,9 @@ $(BUILD)/kernel.bin: \
 	$(BUILD)/kernel/io.o \
 	$(BUILD)/kernel/console.o \
 	$(BUILD)/kernel/serial.o \
+	$(BUILD)/kernel/printk.o \
 	$(BUILD)/lib/string.o \
+	$(BUILD)/lib/vsprintf.o \
 
 	$(shell mkdir -p $(dir $@))
 	ld ${LDFLAGS} $^ -o $@

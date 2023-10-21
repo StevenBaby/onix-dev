@@ -13,5 +13,7 @@ void kernel_init()
 {
     console_init();
     serial_init();
-    serial_write(NULL, message, sizeof(message));
+
+    printk("This is test of printf %d %c %s %p\n",
+           20231019, 'A', "hello world", &message);
 }
