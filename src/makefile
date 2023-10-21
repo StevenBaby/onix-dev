@@ -11,7 +11,7 @@ CFLAGS += -m32
 endif
 
 CFLAGS+= -fno-builtin # no builtin functions
-CFLAGS+= -nostdinc # no standard include files
+# CFLAGS+= -nostdinc # no standard include files
 CFLAGS+= -fno-pic # no position independent code
 CFLAGS+= -fno-pie # no position independent executable
 CFLAGS+= -nostdlib # no standard library
