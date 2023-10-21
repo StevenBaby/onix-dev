@@ -78,6 +78,7 @@ $(BUILD)/kernel.bin: \
 	$(BUILD)/kernel/console.o \
 	$(BUILD)/kernel/serial.o \
 	$(BUILD)/kernel/printk.o \
+	$(BUILD)/kernel/debug.o \
 	$(BUILD)/lib/string.o \
 	$(BUILD)/lib/vsprintf.o \
 
