@@ -7,9 +7,11 @@
 char message[] = "Onix 64 bit is running...\n";
 
 extern void console_init();
+extern void serial_init();
 
 void kernel_init()
 {
     console_init();
-    console_write(NULL, message, sizeof(message));
+    serial_init();
+    serial_write(NULL, message, sizeof(message));
 }

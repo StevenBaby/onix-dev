@@ -3,6 +3,7 @@
 
 #include <onix/types.h>
 
-err_t console_write(void *con, char *data, size_t size);
+err_t console_write(void *ptr, char *data, size_t size);
+err_t serial_write(void *ptr, char *data, size_t size);
 
 #endif

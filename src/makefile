@@ -76,6 +76,7 @@ $(BUILD)/kernel.bin: \
 	$(BUILD)/kernel/main.o \
 	$(BUILD)/kernel/io.o \
 	$(BUILD)/kernel/console.o \
+	$(BUILD)/kernel/serial.o \
 	$(BUILD)/lib/string.o \
 
 	$(shell mkdir -p $(dir $@))
