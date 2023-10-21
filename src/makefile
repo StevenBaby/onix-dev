@@ -2,6 +2,7 @@ BUILD:=../build
 SRC:=.
 
 ENTRYPOINT:= 0x10000
+ONIX_MAGIC:= 0x20220205
 
 CFLAGS+= -fno-builtin # no builtin functions
 CFLAGS+= -nostdinc # no standard include files
@@ -16,6 +17,15 @@ DEBUG:= -g
 $(BUILD)/boot/%.bin: $(SRC)/boot/%.asm
 	$(shell mkdir -p $(dir $@))
 	nasm -f bin $< -o $@
+
+LOADER_FLAGS:=
+LOADER_FLAGS+= -DKERNEL_SIZE=$$(stat -c%s "$(BUILD)/system.bin")
+LOADER_FLAGS+= -DENTRYPOINT=$(ENTRYPOINT)
+LOADER_FLAGS+= -DONIX_MAGIC=$(ONIX_MAGIC)
+
+$(BUILD)/boot/loader.bin: $(SRC)/boot/loader.asm $(BUILD)/system.bin
+	$(shell mkdir -p $(dir $@))
+	nasm $(LOADER_FLAGS) -f bin $< -o $@ 
 
 $(BUILD)/%.o: $(SRC)/%.asm
 	$(shell mkdir -p $(dir $@))
