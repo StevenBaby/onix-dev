@@ -58,7 +58,7 @@ error:
 dap:                ; Disk Address Packet
     .size db 0x10   ; DAP size 16 byte
     .unused db 0x00 ; reserved
-    .sectors dw 4   ; sector count
+    .sectors dw 8   ; sector count
 
     ; becase of little-endian，so offset:segment
     .offset dw 0x1000   ; offset
