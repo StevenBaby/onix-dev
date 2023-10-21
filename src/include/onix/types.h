@@ -26,4 +26,6 @@ typedef uint64_t u64;
 
 #define _omit_frame __attribute__((optimize("omit-frame-pointer")))
 
+#define _inline __attribute__((always_inline)) inline
+
 #endif
