@@ -83,6 +83,7 @@ $(BUILD)/kernel.bin: \
 	$(BUILD)/kernel/assert.o \
 	$(BUILD)/lib/string.o \
 	$(BUILD)/lib/vsprintf.o \
+	$(BUILD)/lib/list.o \
 
 	$(shell mkdir -p $(dir $@))
 	ld ${LDFLAGS} $^ -o $@
