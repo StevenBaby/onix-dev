@@ -80,6 +80,7 @@ $(BUILD)/kernel.bin: \
 	$(BUILD)/kernel/serial.o \
 	$(BUILD)/kernel/printk.o \
 	$(BUILD)/kernel/debug.o \
+	$(BUILD)/kernel/assert.o \
 	$(BUILD)/lib/string.o \
 	$(BUILD)/lib/vsprintf.o \
 
