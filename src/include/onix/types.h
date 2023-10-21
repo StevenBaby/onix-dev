@@ -24,6 +24,8 @@ typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
 
+typedef int64_t err_t;
+
 #define _omit_frame __attribute__((optimize("omit-frame-pointer")))
 
 #define _packed __attribute__((packed))

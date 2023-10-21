@@ -1,15 +1,15 @@
 
 #include <onix/types.h>
 #include <onix/io.h>
+#include <onix/string.h>
+#include <onix/printk.h>
+
+char message[] = "Onix 64 bit is running...\n";
+
+extern void console_init();
 
 void kernel_init()
 {
-    u32 data = inb(0x92);
-    outb(0x92, (u8)data);
-
-    data = inw(0xCFC);
-    outw(0xCFC, (u16)data);
-
-    data = inl(0xCFC);
-    outl(0xCFC, data);
+    console_init();
+    console_write(NULL, message, sizeof(message));
 }
