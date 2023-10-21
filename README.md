@@ -30,3 +30,7 @@ multiboot2
     sudo pacman -S lib32-glibc
 
 - https://gcc.gnu.org/onlinedocs/gcc/Option-Summary.html
+
+### assembly language
+
+- https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html

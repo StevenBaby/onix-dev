@@ -1,11 +1,15 @@
 
-char message[] = "Onix 64 bit is running...";
+#include <onix/types.h>
+#include <onix/io.h>
 
 void kernel_init()
 {
-    char *video = (char *)0xb8000;
-    for (int i = 0; i < sizeof(message); i++)
-    {
-        video[i * 2] = message[i];
-    }
+    u32 data = inb(0x92);
+    outb(0x92, (u8)data);
+
+    data = inw(0xCFC);
+    outw(0xCFC, (u16)data);
+
+    data = inl(0xCFC);
+    outl(0xCFC, data);
 }

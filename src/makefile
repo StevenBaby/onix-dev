@@ -55,6 +55,13 @@ $(BUILD)/%.o: $(SRC)/%.c
 	$(shell mkdir -p $(dir $@))
 	gcc $(CFLAGS) $(DEBUG) $(INCLUDE) -c $< -o $@
 
+SFLAGS:= -fno-asynchronous-unwind-tables
+SFLAGS+= -fno-dwarf2-cfi-asm
+
+$(BUILD)/%.s: $(SRC)/%.c
+	$(shell mkdir -p $(dir $@))
+	gcc $(CFLAGS) $(INCLUDE) $(SFLAGS) -S $< -o $@
+
 ifdef i386
 LDFLAGS += -m elf_i386
 endif
@@ -67,6 +74,7 @@ $(BUILD)/kernel.bin: \
 	$(BUILD)/kernel/start.o \
 	$(BUILD)/kernel/setup32.o \
 	$(BUILD)/kernel/main.o \
+	$(BUILD)/kernel/io.o \
 
 	$(shell mkdir -p $(dir $@))
 	ld ${LDFLAGS} $^ -o $@
