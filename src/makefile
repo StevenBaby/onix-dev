@@ -129,6 +129,12 @@ IMAGES:= $(BUILD)/harddisk.img
 
 image: $(IMAGES)
 
+$(BUILD)/harddisk.vmdk: $(BUILD)/harddisk.img
+	qemu-img convert -O vmdk $< $@
+
+.PHONY:vmdk
+vmdk: $(BUILD)/harddisk.vmdk
+
 .PHONY: clean
 clean:
 	rm -rf $(BUILD)
