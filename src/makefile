@@ -75,6 +75,7 @@ $(BUILD)/kernel.bin: \
 	$(BUILD)/kernel/setup32.o \
 	$(BUILD)/kernel/main.o \
 	$(BUILD)/kernel/io.o \
+	$(BUILD)/kernel/memory.o \
 	$(BUILD)/kernel/console.o \
 	$(BUILD)/kernel/serial.o \
 	$(BUILD)/kernel/printk.o \

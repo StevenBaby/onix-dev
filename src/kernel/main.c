@@ -7,16 +7,13 @@
 
 #define LOGK(fmt, args...) DEBUGK(fmt, ##args)
 
-char message;
-
 extern void console_init();
 extern void serial_init();
+extern void memory_init();
 
 void kernel_init()
 {
     console_init();
     serial_init();
-
-    LOGK("This is test of printf %d %c %s %p\n",
-           20231019, 'A', "hello world", &message);
+    memory_init();
 }
