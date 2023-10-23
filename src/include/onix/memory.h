@@ -58,5 +58,6 @@ extern u32 kernel_size;
 
 void map_page(u64 vaddr, u64 paddr);
 void map_area(u64 paddr, u64 size);
+ards_t *memory_area(u64 addr);
 
 #endif

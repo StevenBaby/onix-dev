@@ -109,6 +109,19 @@ void map_area(u64 paddr, u64 size)
     LOGK("MAP memory 0x%p size 0x%X\n", paddr, size);
 }
 
+ards_t *memory_area(u64 addr)
+{
+    ards_t *ptr = ards_table;
+    for (size_t i = 0; i < ards_count; i++, ptr++)
+    {
+        if (ptr->base <= addr && ptr->base + ptr->size > addr)
+        {
+            return ptr;
+        }
+    }
+    return NULL;
+}
+
 void page_fault(
     u64 _rdi, u64 _rsi, u64 _rdx, u64 _rcx, u64 _r8, u64 _r9,
     u64 gs, u64 fs, u64 es, u64 ds,
