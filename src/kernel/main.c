@@ -11,6 +11,7 @@
 extern void console_init();
 extern void serial_init();
 extern void memory_init();
+extern void zone_init();
 extern void interrupt_init();
 extern void pic_init();
 extern void clock_init();
@@ -22,6 +23,7 @@ void kernel_init()
     serial_init();
     interrupt_init();
     memory_init();
+    zone_init();
     pic_init();
     clock_init();
     keyboard_init();

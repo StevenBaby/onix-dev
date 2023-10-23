@@ -7,6 +7,7 @@
 
 #define MEMORY_LOADER 0x1000L
 #define MEMORY_PAGING 0x2000L // 0x2000 ~ 0x5000
+#define MEMORY_BASEZONE 0x6000L
 #define MEMORY_BASE 0x100000L
 
 #define IDX(addr) (((u64)addr) >> 12)

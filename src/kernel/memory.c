@@ -3,6 +3,7 @@
 #include <onix/stdlib.h>
 #include <onix/string.h>
 #include <onix/memory.h>
+#include <onix/zone.h>
 #include <onix/interrupt.h>
 #include <onix/assert.h>
 #include <onix/debug.h>
@@ -49,8 +50,40 @@ static u64 get_page()
         pte_page -= PAGE_SIZE;
         addr = pte_page;
     }
+    else
+    {
+        addr = zone_alloc(0);
+        page_t *page = &memory_map[IDX(addr)];
+        assert(page->count == 0);
+        page->count = 1;
+    }
     LOGK("get page %#p\n", addr);
     return addr;
+}
+
+// 释放一页物理内存
+static void put_page(u64 addr)
+{
+    u64 idx = IDX(addr);
+
+    // idx 大于 1M 并且 小于 总页面数
+    assert(addr > MEMORY_BASE && addr < memory_max_size);
+
+    page_t *page = &memory_map[idx];
+
+    // 保证至少有一个引用
+    assert(page->count >= 1);
+
+    // 物理引用减一
+    page->count--;
+
+    // 若为 0，则空闲页加一
+    if (!page->count)
+    {
+        zone_free(addr, 0);
+    }
+
+    LOGK("PUT page 0x%p\n", addr);
 }
 
 page_entry_t *get_pte(u64 vaddr, int level, bool create)
