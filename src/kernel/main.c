@@ -16,6 +16,7 @@ extern void interrupt_init();
 extern void pic_init();
 extern void clock_init();
 extern void keyboard_init();
+extern void cpu_init();
 
 void kernel_init()
 {
@@ -24,6 +25,7 @@ void kernel_init()
     interrupt_init();
     memory_init();
     zone_init();
+    cpu_init();
     pic_init();
     clock_init();
     keyboard_init();

@@ -76,6 +76,7 @@ $(BUILD)/kernel.bin: \
 	$(BUILD)/kernel/main.o \
 	$(BUILD)/kernel/io.o \
 	$(BUILD)/kernel/mio.o \
+	$(BUILD)/kernel/cpu.o \
 	$(BUILD)/kernel/memory.o \
 	$(BUILD)/kernel/zone.o \
 	$(BUILD)/kernel/handler.o \
