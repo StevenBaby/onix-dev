@@ -14,6 +14,7 @@
 #define PIDX2(addr) ((((u64)addr) >> 30) & 0x1ff)
 #define PIDX3(addr) ((((u64)addr) >> 21) & 0x1ff)
 #define PIDX4(addr) ((((u64)addr) >> 12) & 0x1ff)
+#define PIDX(addr, level) ((((u64)addr) >> (12 + (4 - (level)) * 9)) & 0x1ff)
 #define PAGE(idx) (((u64)idx) << 12)
 
 typedef struct page_entry_t
@@ -33,6 +34,11 @@ typedef struct page_entry_t
     u8 xd : 1;         // execute
 } _packed page_entry_t;
 
+typedef struct page_t
+{
+    u32 count; // 引用计数
+} page_t;
+
 // Address Range Descriptor Structure
 typedef struct ards_t
 {
@@ -49,5 +55,8 @@ extern u32 kernel_chksum;
 extern u32 kernel_size;
 
 #define ARDS_ZONE_VALID 1 // ards 可用内存区域
+
+void map_page(u64 vaddr, u64 paddr);
+void map_area(u64 paddr, u64 size);
 
 #endif

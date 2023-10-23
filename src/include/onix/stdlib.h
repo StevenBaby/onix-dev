@@ -8,4 +8,7 @@
 
 #define ALIGN(addr, bytes) (((addr) + (bytes - 1)) & ~(bytes - 1))
 
+// 计算 num 分成 size 的数量
+u64 div_round_up(u64 num, u64 size);
+
 #endif

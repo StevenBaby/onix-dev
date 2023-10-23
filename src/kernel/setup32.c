@@ -300,6 +300,7 @@ static void paging_init()
 
     entry = (page_entry_t *)MEMORY_PAGING;
     entry_init(entry, IDX(MEMORY_PAGING + PAGE_SIZE));
+    entry_init(&entry[511], IDX(MEMORY_PAGING));
 
     entry = (page_entry_t *)(MEMORY_PAGING + PAGE_SIZE);
     entry_init(entry, IDX(MEMORY_PAGING + PAGE_SIZE * 2));
@@ -308,9 +309,9 @@ static void paging_init()
     entry_init(entry, IDX(MEMORY_PAGING + PAGE_SIZE * 3));
 
     entry = (page_entry_t *)(MEMORY_PAGING + PAGE_SIZE * 3);
-    for (size_t i = 0; i < 512; i++, entry++)
+    for (size_t i = 1; i < 512; i++)
     {
-        entry_init(entry, i);
+        entry_init(entry + i, i);
     }
 
     asm volatile("movl %%eax, %%cr3\n" ::"a"(MEMORY_PAGING));

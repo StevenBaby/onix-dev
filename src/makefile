@@ -87,6 +87,7 @@ $(BUILD)/kernel.bin: \
 	$(BUILD)/kernel/debug.o \
 	$(BUILD)/kernel/assert.o \
 	$(BUILD)/lib/string.o \
+	$(BUILD)/lib/stdlib.o \
 	$(BUILD)/lib/vsprintf.o \
 	$(BUILD)/lib/list.o \
 
