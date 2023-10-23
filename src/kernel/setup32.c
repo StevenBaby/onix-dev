@@ -1,5 +1,15 @@
 #include <onix/onix.h>
 #include <onix/types.h>
+#include <onix/debug.h>
+#include <onix/stdlib.h>
+#include <onix/multiboot2.h>
+#include <onix/descriptor.h>
+#include <onix/memory.h>
+
+#define MSR_IA32_EFER 0xC0000080
+
+#define MAX(a, b) (a < b ? b : a)
+#define MIN(a, b) (a < b ? a : b)
 
 static _omit_frame void code32()
 {
@@ -244,10 +254,145 @@ static void check_system_memory()
     kernel_size = size;
 }
 
+#define GDT_SIZE 8
+
+static _aligned8 descriptor_t gdt[GDT_SIZE]; // global descriotpr table
+static _aligned8 pointer_t gdt_ptr;          // gdt pointer
+
+static void gdt_init()
+{
+    puts("GDT init...\n");
+
+    memset(gdt, 0, sizeof(gdt));
+
+    descriptor_t *desc;
+    desc = gdt + KERNEL_CODE_IDX;
+    desc->segment = 1;   // code
+    desc->long_mode = 1; // long mode
+    desc->present = 1;   // in memory
+    desc->DPL = 0;       // dpl
+    desc->type = 0b1010; // code / n oconforming / readable / no access
+
+    desc = gdt + KERNEL_DATA_IDX;
+    desc->segment = 1;   // data
+    desc->long_mode = 1; // long mode
+    desc->present = 1;   // in memory
+    desc->DPL = 0;       // DPL
+    desc->type = 0b0010; // data / upward / writeable / noaccess
+
+    gdt_ptr.base = (u32)gdt;
+    gdt_ptr.limit = sizeof(gdt) - 1;
+
+    asm volatile("lgdt gdt_ptr\n");
+}
+
+static _inline void entry_init(page_entry_t *entry, u32 index)
+{
+    *(u64 *)entry = PAGE(index) | 7;
+}
+
+static void paging_init()
+{
+    puts("paging init...\n");
+
+    memset((void *)MEMORY_PAGING, 0, PAGE_SIZE * 4);
+    page_entry_t *entry;
+
+    entry = (page_entry_t *)MEMORY_PAGING;
+    entry_init(entry, IDX(MEMORY_PAGING + PAGE_SIZE));
+
+    entry = (page_entry_t *)(MEMORY_PAGING + PAGE_SIZE);
+    entry_init(entry, IDX(MEMORY_PAGING + PAGE_SIZE * 2));
+
+    entry = (page_entry_t *)(MEMORY_PAGING + PAGE_SIZE * 2);
+    entry_init(entry, IDX(MEMORY_PAGING + PAGE_SIZE * 3));
+
+    entry = (page_entry_t *)(MEMORY_PAGING + PAGE_SIZE * 3);
+    for (size_t i = 0; i < 512; i++, entry++)
+    {
+        entry_init(entry, i);
+    }
+
+    asm volatile("movl %%eax, %%cr3\n" ::"a"(MEMORY_PAGING));
+}
+
+static void enable_long_mode()
+{
+    // open pae...
+    asm volatile(
+        "movl %cr4, %eax\n"
+        "btsl $5, %eax\n"
+        "movl %eax, %cr4\n");
+
+    // enable long mode...
+    asm volatile(
+        "rdmsr\n"
+        "btsl $8, %%eax\n"
+        "wrmsr\n" ::"c"(MSR_IA32_EFER));
+
+    // enable paging...
+    asm volatile(
+        "movl %cr0, %eax\n"
+        "btsl $31, %eax\n"
+        "movl %eax, %cr0\n");
+}
+
+ards_t _aligned8 ards_table[ARDS_TABLE_LEN];
+u32 ards_count = 0;
+
+static void ards_init(u32 addr)
+{
+    puts("ards init...\n");
+    ards_count = MIN(ARDS_TABLE_LEN, *(u32 *)addr);
+    ards_t *ptr = (ards_t *)(addr + 4);
+    memcpy(ards_table, ptr, ards_count * sizeof(ards_t));
+}
+
+static void multiboot2_ards_init(u32 addr)
+{
+    u32 size = *(unsigned int *)addr;
+    multi_tag_t *tag = (multi_tag_t *)(addr + 8);
+
+    while (tag->type != MULTIBOOT_TAG_TYPE_END)
+    {
+        if (tag->type == MULTIBOOT_TAG_TYPE_MMAP)
+            break;
+        // 下一个 tag 对齐到了 8 字节
+        tag = (multi_tag_t *)((u32)tag + ALIGN(tag->size, 8));
+    }
+
+    multi_tag_mmap_t *mtag = (multi_tag_mmap_t *)tag;
+    multi_mmap_entry_t *entry = mtag->entries;
+    while ((u32)entry < (u32)tag + tag->size)
+    {
+        memcpy(&ards_table[ards_count++], entry, sizeof(ards_t));
+        entry = (multi_mmap_entry_t *)((u32)entry + mtag->entry_size);
+    }
+}
+
 void setup_long_mode(u32 magic, u32 addr)
 {
     check_system_memory();
 
     console_init();
     puts("Setting up long mode...\n");
+
+    switch (magic)
+    {
+    case ONIX_MAGIC:
+        ards_init(addr);
+        break;
+    case MULTIBOOT2_MAGIC:
+        multiboot2_ards_init(addr);
+        break;
+    default:
+        puts("Magic unknown, init memory failure...\n");
+        while (true)
+            ;
+        break;
+    }
+
+    gdt_init();
+    paging_init();
+    enable_long_mode();
 }

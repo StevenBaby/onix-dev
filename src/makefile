@@ -1,7 +1,7 @@
 BUILD:=../build
 SRC:=.
 
-i386=1
+# i386=1
 
 MULTIBOOT2:=0x18000
 ENTRYPOINT:=$(shell python -c "print(f'0x{$(MULTIBOOT2) + 0x8000:x}')")
@@ -66,6 +66,7 @@ LDFLAGS:=$(strip ${LDFLAGS})
 $(BUILD)/kernel.bin: \
 	$(BUILD)/kernel/start.o \
 	$(BUILD)/kernel/setup32.o \
+	$(BUILD)/kernel/main.o \
 
 	$(shell mkdir -p $(dir $@))
 	ld ${LDFLAGS} $^ -o $@
