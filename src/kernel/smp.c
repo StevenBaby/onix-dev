@@ -30,7 +30,5 @@ void smp_init()
 
 void smp_ap_init()
 {
-    spin_lock(&lock);
     LOGK("application processor id %d init...\n", apic_local_id());
-    spin_unlock(&lock);
 }

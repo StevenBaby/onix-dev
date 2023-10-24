@@ -103,5 +103,6 @@ startsmp_long_mode:
 
     call smp_ap_init
 
+    ud2
     hlt
     jmp $
