@@ -44,7 +44,7 @@ endif
 
 $(BUILD)/%.o: $(SRC)/%.asm
 	$(shell mkdir -p $(dir $@))
-	nasm $(NASM_FLAGS) $(DEBUG) $< -o $@
+	nasm $(NASM_FLAGS) $(DEBUG) -DONIX_MAGIC=$(ONIX_MAGIC) $< -o $@
 
 $(BUILD)/%32.o: $(SRC)/%32.c
 	$(shell mkdir -p $(dir $@))
@@ -76,6 +76,8 @@ $(BUILD)/kernel.bin: \
 	$(BUILD)/kernel/main.o \
 	$(BUILD)/kernel/io.o \
 	$(BUILD)/kernel/memory.o \
+	$(BUILD)/kernel/handler.o \
+	$(BUILD)/kernel/interrupt.o \
 	$(BUILD)/kernel/console.o \
 	$(BUILD)/kernel/serial.o \
 	$(BUILD)/kernel/printk.o \
