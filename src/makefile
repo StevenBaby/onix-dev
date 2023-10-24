@@ -78,6 +78,7 @@ $(BUILD)/kernel.bin: \
 	$(BUILD)/kernel/memory.o \
 	$(BUILD)/kernel/handler.o \
 	$(BUILD)/kernel/interrupt.o \
+	$(BUILD)/kernel/pic.o \
 	$(BUILD)/kernel/console.o \
 	$(BUILD)/kernel/serial.o \
 	$(BUILD)/kernel/printk.o \

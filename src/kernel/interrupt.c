@@ -5,6 +5,7 @@
 #include <onix/debug.h>
 #include <onix/assert.h>
 #include <onix/interrupt.h>
+#include <onix/pic.h>
 
 #define LOGK(fmt, args...) DEBUGK(fmt, ##args)
 
@@ -134,6 +135,16 @@ void idt_init()
     idt_ptr.limit = sizeof(idt) - 1;
     asm volatile("lidt idt_ptr\n");
     // BMB;
+}
+
+void send_eoi(int vector)
+{
+    pic_send_eoi(vector);
+}
+
+void set_interrupt_mask(u32 irq, bool enable)
+{
+    pic_interrupt_mask(irq, enable);
 }
 
 // 注册中断处理函数
