@@ -9,6 +9,7 @@ QEMU+= -m 32M # memory
 QEMU+= -drive file=$(BUILD)/harddisk.img,if=ide,index=0,media=disk,format=raw # harddisk
 QEMU+= -chardev stdio,mux=on,id=com1 # char device 1
 QEMU+= -serial chardev:com1 # serial 1
+QEMU+= -smp sockets=1,cores=4,threads=1
 
 QEMU_DISK_BOOT:=-boot c
 

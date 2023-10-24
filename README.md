@@ -34,3 +34,9 @@ multiboot2
 ### assembly language
 
 - https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html
+
+### SMP
+
+- https://www.qemu.org/docs/master/system/qemu-manpage.html
+- https://bochs.sourceforge.io/doc/docbook/user/smp.html
+- https://bochs.sourceforge.io/doc/docbook/user/bochsrc.html#BOCHSOPT-CPU
