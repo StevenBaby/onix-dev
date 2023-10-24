@@ -28,7 +28,7 @@ void clock_handler(int vector)
     assert(vector == 0x20);
 
     jiffies++;
-    DEBUGK("clock jiffies %d ...\n", jiffies);
+    // DEBUGK("clock jiffies %d ...\n", jiffies);
 }
 
 void pit_init()
@@ -46,8 +46,6 @@ void pit_init()
 
 void clock_init()
 {
-    LOGK("clock init...\n");
-
     pit_init();
     set_interrupt_handler(IRQ_CLOCK + IRQ_MASTER_NR, clock_handler);
     set_interrupt_mask(IRQ_CLOCK, true);

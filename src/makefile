@@ -80,6 +80,7 @@ $(BUILD)/kernel.bin: \
 	$(BUILD)/kernel/interrupt.o \
 	$(BUILD)/kernel/pic.o \
 	$(BUILD)/kernel/clock.o \
+	$(BUILD)/kernel/keyboard.o \
 	$(BUILD)/kernel/console.o \
 	$(BUILD)/kernel/serial.o \
 	$(BUILD)/kernel/printk.o \
