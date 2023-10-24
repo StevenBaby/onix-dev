@@ -57,4 +57,6 @@ typedef struct cpuid_t
 
 void cpuid(u32 main, u32 sub, cpuid_t *id);
 
+#define halt() asm volatile("hlt\n");
+
 #endif

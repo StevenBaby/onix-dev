@@ -140,7 +140,7 @@ void idt_init()
 
 void send_eoi(int vector)
 {
-    if (vector < 0x20 || vector >= 0x30)
+    if (vector < 0x20)
         return;
     if (apic_valid)
         apic_send_eoi(vector);
