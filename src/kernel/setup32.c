@@ -257,7 +257,7 @@ static void check_system_memory()
 #define GDT_SIZE 8
 
 static _aligned8 descriptor_t gdt[GDT_SIZE]; // global descriotpr table
-static _aligned8 pointer_t gdt_ptr;          // gdt pointer
+pointer_t _aligned8 gdt_ptr;                 // gdt pointer
 
 static void gdt_init()
 {
@@ -395,5 +395,15 @@ void setup_long_mode(u32 magic, u32 addr)
 
     gdt_init();
     paging_init();
+    enable_long_mode();
+}
+
+extern pointer_t idt_ptr;
+
+void setup_ap_long_mode(u32 magic, u32 addr)
+{
+    asm volatile("lgdt gdt_ptr\n");
+    asm volatile("lidt idt_ptr\n");
+    asm volatile("movl %%eax, %%cr3\n" ::"a"(MEMORY_PAGING));
     enable_long_mode();
 }

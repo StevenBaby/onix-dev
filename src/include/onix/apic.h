@@ -3,8 +3,13 @@
 
 #include <onix/types.h>
 
+u32 apic_local_id();
+
 void apic_send_eoi(int vector);
 void apic_interrupt_mask(u32 irq, bool enable);
+
+void apic_send_ap_init();
+void apic_send_ap_startup();
 
 extern bool apic_valid;
 

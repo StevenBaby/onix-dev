@@ -72,6 +72,7 @@ LDFLAGS:=$(strip ${LDFLAGS})
 
 $(BUILD)/kernel.bin: \
 	$(BUILD)/kernel/start.o \
+	$(BUILD)/kernel/startsmp.o \
 	$(BUILD)/kernel/setup32.o \
 	$(BUILD)/kernel/main.o \
 	$(BUILD)/kernel/io.o \
@@ -83,6 +84,7 @@ $(BUILD)/kernel.bin: \
 	$(BUILD)/kernel/interrupt.o \
 	$(BUILD)/kernel/apic.o \
 	$(BUILD)/kernel/pic.o \
+	$(BUILD)/kernel/smp.o \
 	$(BUILD)/kernel/clock.o \
 	$(BUILD)/kernel/keyboard.o \
 	$(BUILD)/kernel/console.o \

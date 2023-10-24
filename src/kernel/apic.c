@@ -25,6 +25,9 @@
 #define APIC_DFR (0xE0)  // Destination Format Register
 #define APIC_SIVR (0xF0) // Spurious Interrupt Vector Register
 
+#define APIC_ICR_LOW (0x300)
+#define APIC_ICR_HIGH (0x310)
+
 #define APIC_LVT_CMCI (0x2F0)
 #define APIC_LVT_TIMER (0x320)
 #define APIC_LVT_THERMAL (0x330)
@@ -49,6 +52,27 @@
 #define APIC_BASE_BSP (1 << 8)
 #define APIC_BASE_EXT (1 << 10)
 #define APIC_BASE_EN (1 << 11)
+
+// Figure 10-12. Interrupt Command Register (ICR) page 3177
+#define APIC_LCR_FIXED (0b000 << 8)
+#define APIC_LCR_LOW (0b001 << 8)
+#define APIC_LCR_SMI (0b010 << 8)
+#define APIC_LCR_NMI (0b100 << 8)
+#define APIC_LCR_INIT (0b101 << 8)
+#define APIC_LCR_START (0b110 << 8)
+#define APIC_LCR_DST_PHY (0 << 11)
+#define APIC_LCR_DST_LOG (1 << 11)
+#define APIC_LCR_DEL_IDLE (0 << 12)
+#define APIC_LCR_DEL_PEND (1 << 12)
+#define APIC_LCR_LEVEL_DEASSERT (0 << 14)
+#define APIC_LCR_LEVEL_ASSERT (1 << 14)
+#define APIC_LCR_TRIGGER_EDGE (0 << 15)
+#define APIC_LCR_TRIGGER_LEVEL (1 << 15)
+
+#define APIC_LCR_DST_NO_SHORTHAND (0b00 << 18)
+#define APIC_LCR_DST_SELF (0b01 << 18)
+#define APIC_LCR_DST_ALL_NO_SELF (0b10 << 18)
+#define APIC_LCR_DST_ALL_WITH_SELF (0b11 << 18)
 
 // Figure 10-23. Spurious-Interrupt Vector Register (SVR)
 #define APIC_SIVR_EN (1 << 8)
@@ -126,6 +150,11 @@ static void io_apic_rte_outq(u8 idx, u64 data)
     io_apic_outl(IOREDTBL + idx * 2 + 1, (u32)(data >> 32));
 }
 
+u32 apic_local_id()
+{
+    return local_apic_inl(APIC_ID) >> 24;
+}
+
 void apic_send_eoi(int vector)
 {
     local_apic_outl(APIC_EOI, 0);
@@ -139,6 +168,32 @@ void apic_interrupt_mask(u32 irq, bool enable)
     else
         mask |= APIC_LVT_MASKED;
     io_apic_rte_outq(irq, mask);
+}
+
+void apic_send_ap_init()
+{
+    u32 data = APIC_LCR_DST_ALL_WITH_SELF;
+    data |= APIC_LCR_LEVEL_ASSERT;
+    data |= APIC_LCR_INIT;
+    local_apic_outl(APIC_ICR_LOW, data);
+    while (local_apic_inl(APIC_LCR_LOW) & APIC_LCR_DEL_PEND)
+        ;
+}
+
+extern void startsmp();
+
+void apic_send_ap_startup()
+{
+    u64 data = (u64)startsmp;
+    assert((data & 0xfff) == 0);
+    data >>= 12;
+
+    data |= APIC_LCR_DST_ALL_WITH_SELF;
+    data |= APIC_LCR_LEVEL_ASSERT;
+    data |= APIC_LCR_START;
+    local_apic_outl(APIC_ICR_LOW, data);
+    while (local_apic_inl(APIC_LCR_LOW) & APIC_LCR_DEL_PEND)
+        ;
 }
 
 static void local_apic_init()

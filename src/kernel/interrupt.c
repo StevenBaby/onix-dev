@@ -29,7 +29,7 @@ typedef struct gate_t
 #define ENTRY_SIZE 0x30
 
 static gate_t idt[IDT_SIZE];
-static pointer_t idt_ptr;
+pointer_t idt_ptr;
 
 u64 handler_table[IDT_SIZE];
 extern u64 handler_entry_table[IDT_SIZE];

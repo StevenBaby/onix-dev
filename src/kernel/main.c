@@ -18,6 +18,7 @@ extern void pic_init();
 extern void clock_init();
 extern void keyboard_init();
 extern void cpu_init();
+extern void smp_init();
 
 void kernel_init()
 {
@@ -31,6 +32,7 @@ void kernel_init()
     pic_init();
     clock_init();
     keyboard_init();
+    smp_init();
 
     set_interrupt_state(true);
 }
