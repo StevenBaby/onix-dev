@@ -77,8 +77,8 @@
 #define APIC_TIMER_DIV128 (0b1010)
 
 bool apic_valid = false;
-static u64 local_apic_addr = 0xFEE00000UL;
-static u64 io_apic_addr = 0xFEC00000UL;
+u64 local_apic_addr = 0xFEE00000UL;
+u64 io_apic_addr = 0xFEC00000UL;
 
 static void get_msr(u32 msr, u32 *eax, u32 *edx)
 {

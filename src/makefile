@@ -81,6 +81,7 @@ $(BUILD)/kernel.bin: \
 	$(BUILD)/kernel/zone.o \
 	$(BUILD)/kernel/handler.o \
 	$(BUILD)/kernel/interrupt.o \
+	$(BUILD)/kernel/acpi.o \
 	$(BUILD)/kernel/apic.o \
 	$(BUILD)/kernel/pic.o \
 	$(BUILD)/kernel/clock.o \
