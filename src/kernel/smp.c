@@ -37,33 +37,19 @@ void smp_init()
     spin_init(&lock);
     apic_send_ap_init();
     apic_send_ap_startup();
-
-    while (cpu_count < 4)
-        ;
-
-    LOGK("cpu init finished\n");
-
-    apic_send_ipi(SMP_IPI_NR, 1);
-    apic_send_ipi(SMP_IPI_NR, 1);
-    apic_send_ipi(SMP_IPI_NR, 1);
-    apic_send_ipi(SMP_IPI_NR, 1);
-    apic_send_ipi(SMP_IPI_NR, 1);
-    apic_send_ipi(SMP_IPI_NR, 1);
 }
 
 extern void local_apic_init();
+extern void local_apic_timer_init();
 
 void smp_ap_init()
 {
     local_apic_init();
-
+    local_apic_timer_init();
     set_interrupt_state(true);
-    spin_lock(&lock);
-    cpu_count += 1;
-    spin_unlock(&lock);
     while (true)
     {
-        LOGK("application processor id %d init...\n", apic_local_id());
-        halt();
+        // LOGK("application processor id %d init...\n", apic_local_id());
+        // halt();
     }
 }

@@ -27,9 +27,18 @@ u64 jiffy = JIFFY;
 void clock_handler(int vector)
 {
     assert(vector == 0x20 || vector == 0x22);
+    u32 id = apic_local_id();
+    if (!id)
+        jiffies++;
 
-    jiffies++;
-    // DEBUGK("clock jiffies %d ...\n", jiffies);
+    DEBUGK("cpu %d clock jiffies %d ...\n", apic_local_id(), jiffies);
+}
+
+void clock_sleep(u64 ms)
+{
+    u64 future = jiffies + ms / JIFFY;
+    while (jiffies < future)
+        ;
 }
 
 void pit_init()
@@ -48,10 +57,11 @@ void pit_init()
 void clock_init()
 {
     pit_init();
+
     int irq = IRQ_CLOCK;
     if (apic_valid)
         irq = IRQ_CASCADE;
 
-    set_interrupt_handler(irq  + IRQ_MASTER_NR, clock_handler);
+    set_interrupt_handler(irq + IRQ_MASTER_NR, clock_handler);
     set_interrupt_mask(irq, true);
 }

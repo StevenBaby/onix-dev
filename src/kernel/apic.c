@@ -4,6 +4,7 @@
 #include <onix/mio.h>
 #include <onix/pic.h>
 #include <onix/apic.h>
+#include <onix/clock.h>
 #include <onix/assert.h>
 #include <onix/debug.h>
 
@@ -35,6 +36,10 @@
 #define APIC_LVT_LINT0 (0x350)
 #define APIC_LVT_LINT1 (0x360)
 #define APIC_LVT_ERROR (0x370)
+
+#define APIC_TIMER_INIT (0x380)
+#define APIC_TIMER_CUR (0x390)
+#define APIC_TIMER_DIV (0x3E0)
 
 #define IOAPIC_DATA (0x10)
 #define IOAPIC_EOI (0x40)
@@ -153,6 +158,8 @@ static void io_apic_rte_outq(u8 idx, u64 data)
 
 u32 apic_local_id()
 {
+    if (!apic_valid)
+        return 0;
     return local_apic_inl(APIC_ID) >> 24;
 }
 
@@ -204,6 +211,21 @@ void apic_send_ipi(int vector, u8 apic_id)
 
     data = vector | APIC_ICR_DELIVERY_FIXED;
     local_apic_outl(APIC_ICR_LOW, data);
+}
+
+void local_apic_timer_init()
+{
+    local_apic_outl(APIC_TIMER_DIV, APIC_TIMER_DIV16);
+    local_apic_outl(APIC_TIMER_INIT, 0xFFFFFFFF);
+    clock_sleep(10);
+    local_apic_outl(APIC_LVT_TIMER, APIC_LVT_MASKED);
+
+    u32 ticks = 0xFFFFFFFF - local_apic_inl(APIC_TIMER_CUR);
+    local_apic_outl(APIC_TIMER_DIV, APIC_TIMER_DIV16);
+    local_apic_outl(APIC_TIMER_INIT, ticks);
+    local_apic_outl(
+        APIC_LVT_TIMER,
+        (IRQ_APIC_TIMER + IRQ_MASTER_NR) | APIC_LVT_TIMER_PERIODIC);
 }
 
 void local_apic_init()
@@ -278,7 +300,6 @@ void apic_init()
     }
 
     LOGK("apic init...\n");
-    apic_valid = true;
 
     // disable pic
     outb(PIC_M_DATA, 0b11111111); // 关闭所有中断
@@ -289,4 +310,6 @@ void apic_init()
 
     local_apic_init();
     io_apic_init();
+
+    apic_valid = true;
 }

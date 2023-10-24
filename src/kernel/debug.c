@@ -3,6 +3,7 @@
 #include <onix/stdarg.h>
 #include <onix/printk.h>
 #include <onix/spinlock.h>
+#include <onix/apic.h>
 
 static char buf[1024];
 
@@ -12,7 +13,7 @@ void debugk(char *file, int line, const char *fmt, ...)
 {
     spin_lock(&lock);
 
-    err_t i = sprintf(buf, "[%s] [%d] ", file, line);
+    err_t i = sprintf(buf, "[%d] [%s] [%d] ", apic_local_id(), file, line);
     serial_write(NULL, buf, i);
 
     va_list args;

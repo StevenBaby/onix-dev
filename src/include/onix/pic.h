@@ -9,6 +9,7 @@
 #define IRQ_CLOCK 0      // 时钟
 #define IRQ_KEYBOARD 1   // 键盘
 #define IRQ_CASCADE 2    // 8259 从片控制器
+#define IRQ_APIC_TIMER 2 // APIC 定时器
 #define IRQ_SERIAL_2 3   // 串口 2
 #define IRQ_SERIAL_1 4   // 串口 1
 #define IRQ_PARALLEL_2 5 // 并口 2

@@ -40,3 +40,7 @@ multiboot2
 - https://www.qemu.org/docs/master/system/qemu-manpage.html
 - https://bochs.sourceforge.io/doc/docbook/user/smp.html
 - https://bochs.sourceforge.io/doc/docbook/user/bochsrc.html#BOCHSOPT-CPU
+
+acpi timer
+
+- https://wiki.osdev.org/APIC_Timer
