@@ -139,6 +139,8 @@ void idt_init()
 
 void send_eoi(int vector)
 {
+    if (vector < 0x20 || vector >= 0x30)
+        return;
     pic_send_eoi(vector);
 }
 

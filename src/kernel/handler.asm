@@ -2,6 +2,7 @@
 ; 中断处理函数入口 
 
 extern handler_table
+extern send_eoi
 
 section .text
 
@@ -50,6 +51,9 @@ interrupt_entry:
     ; 找到前面 push %1 压入的 中断向量
     mov rdi, [rbp + 8]
     call [handler_table + rdi * 8]
+
+    mov rdi, [rbp + 8]
+    call send_eoi; // 发送中断处理结束
 
 global interrupt_exit
 interrupt_exit:

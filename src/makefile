@@ -79,6 +79,7 @@ $(BUILD)/kernel.bin: \
 	$(BUILD)/kernel/handler.o \
 	$(BUILD)/kernel/interrupt.o \
 	$(BUILD)/kernel/pic.o \
+	$(BUILD)/kernel/clock.o \
 	$(BUILD)/kernel/console.o \
 	$(BUILD)/kernel/serial.o \
 	$(BUILD)/kernel/printk.o \
