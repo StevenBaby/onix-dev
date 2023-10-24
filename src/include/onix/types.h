@@ -25,6 +25,7 @@ typedef uint32_t u32;
 typedef uint64_t u64;
 
 typedef int64_t err_t;
+typedef u64 time_t;
 
 #define _omit_frame __attribute__((optimize("omit-frame-pointer")))
 

@@ -15,6 +15,8 @@ extern void zone_init();
 extern void interrupt_init();
 extern void apic_init();
 extern void pic_init();
+extern void rtc_init();
+extern void time_init();
 extern void clock_init();
 extern void keyboard_init();
 extern void cpu_init();
@@ -30,6 +32,8 @@ void kernel_init()
     cpu_init();
     apic_init();
     pic_init();
+    // rtc_init();
+    time_init();
     clock_init();
     keyboard_init();
     smp_init();

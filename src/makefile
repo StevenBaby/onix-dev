@@ -85,6 +85,8 @@ $(BUILD)/kernel.bin: \
 	$(BUILD)/kernel/apic.o \
 	$(BUILD)/kernel/pic.o \
 	$(BUILD)/kernel/smp.o \
+	$(BUILD)/kernel/rtc.o \
+	$(BUILD)/kernel/time.o \
 	$(BUILD)/kernel/clock.o \
 	$(BUILD)/kernel/keyboard.o \
 	$(BUILD)/kernel/console.o \
