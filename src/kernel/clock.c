@@ -1,6 +1,7 @@
 #include <onix/io.h>
 #include <onix/interrupt.h>
 #include <onix/pic.h>
+#include <onix/apic.h>
 #include <onix/assert.h>
 #include <onix/debug.h>
 
@@ -25,7 +26,7 @@ u64 jiffy = JIFFY;
 
 void clock_handler(int vector)
 {
-    assert(vector == 0x20);
+    assert(vector == 0x20 || vector == 0x22);
 
     jiffies++;
     // DEBUGK("clock jiffies %d ...\n", jiffies);
@@ -47,6 +48,10 @@ void pit_init()
 void clock_init()
 {
     pit_init();
-    set_interrupt_handler(IRQ_CLOCK + IRQ_MASTER_NR, clock_handler);
-    set_interrupt_mask(IRQ_CLOCK, true);
+    int irq = IRQ_CLOCK;
+    if (apic_valid)
+        irq = IRQ_CASCADE;
+
+    set_interrupt_handler(irq  + IRQ_MASTER_NR, clock_handler);
+    set_interrupt_mask(irq, true);
 }

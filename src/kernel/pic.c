@@ -2,6 +2,7 @@
 #include <onix/types.h>
 #include <onix/io.h>
 #include <onix/pic.h>
+#include <onix/apic.h>
 #include <onix/assert.h>
 #include <onix/debug.h>
 
@@ -52,6 +53,9 @@ void pic_interrupt_mask(u32 irq, bool enable)
 
 void pic_init()
 {
+    if (apic_valid)
+        return;
+
     LOGK("pic init...\n");
 
     outb(PIC_M_CTRL, 0b00010001); // ICW1: 边沿触发, 级联 8259, 需要ICW4.

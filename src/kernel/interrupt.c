@@ -5,6 +5,7 @@
 #include <onix/debug.h>
 #include <onix/assert.h>
 #include <onix/interrupt.h>
+#include <onix/apic.h>
 #include <onix/pic.h>
 
 #define LOGK(fmt, args...) DEBUGK(fmt, ##args)
@@ -141,12 +142,18 @@ void send_eoi(int vector)
 {
     if (vector < 0x20 || vector >= 0x30)
         return;
-    pic_send_eoi(vector);
+    if (apic_valid)
+        apic_send_eoi(vector);
+    else
+        pic_send_eoi(vector);
 }
 
 void set_interrupt_mask(u32 irq, bool enable)
 {
-    pic_interrupt_mask(irq, enable);
+    if (apic_valid)
+        apic_interrupt_mask(irq, enable);
+    else
+        pic_interrupt_mask(irq, enable);
 }
 
 // 注册中断处理函数
