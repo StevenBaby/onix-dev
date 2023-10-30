@@ -7,10 +7,20 @@ LOADER_ADDR:=0x1000
 ENTRYPOINT:= 0x20000
 ONIX_MAGIC:= 0x20220205
 
+DEBUG:=-g
+
 $(BUILD)/boot/%.bin: $(SRC)/boot/%.asm
 	$(shell mkdir -p $(dir $@))
 	nasm -DLOADER_ADDR=$(LOADER_ADDR) -f bin $< -o $@
 
+LOADER_FLAGS+= -DKERNEL_SIZE=$$(stat -c%s "$(BUILD)/system.bin")
+LOADER_FLAGS+= -DLOADER_ADDR=$(LOADER_ADDR)
+LOADER_FLAGS+= -DENTRYPOINT=$(ENTRYPOINT)
+LOADER_FLAGS+= -DONIX_MAGIC=$(ONIX_MAGIC)
+
+$(BUILD)/boot/loader.bin: $(SRC)/boot/loader.asm $(BUILD)/system.bin
+	$(shell mkdir -p $(dir $@))
+	nasm $(LOADER_FLAGS) $(DEBUG) -f bin $< -o $@ 
 
 ifdef i386
 NASM_FLAGS += -f elf32
