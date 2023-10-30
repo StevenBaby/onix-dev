@@ -26,10 +26,10 @@ cmp ah, 0
 jnz error
 
 ; check loader magic number
-cmp word [0x1000], 0x55aa
+cmp word [LOADER_ADDR], 0x55aa
 jnz error
 
-jmp 0:0x1008
+jmp 0: LOADER_ADDR + 8
 
 ; print in real mode
 print:
@@ -58,13 +58,13 @@ error:
 dap:                ; Disk Address Packet
     .size db 0x10   ; DAP size 16 byte
     .unused db 0x00 ; reserved
-    .sectors dw 4   ; sector count
+    .sectors dw 8   ; sector count
 
     ; becase of little-endian，so offset:segment
-    .offset dw 0x1000   ; offset
-    .segment dw 0x00    ; segment register
-    .lbal dd 0x02       ; lba low 32 bits
-    .lbah dd 0x00       ; lba high 16 bits
+    .offset dw LOADER_ADDR  ; offset
+    .segment dw 0x00        ; segment register
+    .lbal dd 0x02           ; lba low 32 bits
+    .lbah dd 0x00           ; lba high 16 bits
 
 ; fill remain byte with 0
 times 510 - ($ - $$) db 0
