@@ -1,15 +1,51 @@
 BUILD:=../build
 SRC:=.
 
+i386=1
 LOADER_ADDR:=0x1000
+
+ENTRYPOINT:= 0x20000
+ONIX_MAGIC:= 0x20220205
 
 $(BUILD)/boot/%.bin: $(SRC)/boot/%.asm
 	$(shell mkdir -p $(dir $@))
 	nasm -DLOADER_ADDR=$(LOADER_ADDR) -f bin $< -o $@
 
+
+ifdef i386
+NASM_FLAGS += -f elf32
+else
+NASM_FLAGS += -f elf64
+endif
+
+$(BUILD)/%.o: $(SRC)/%.asm
+	$(shell mkdir -p $(dir $@))
+	nasm $(NASM_FLAGS) $(DEBUG) $< -o $@
+
+ifdef i386
+LDFLAGS += -m elf_i386
+endif
+LDFLAGS+= -static
+LDFLAGS+= -Ttext $(ENTRYPOINT)
+LDFLAGS:=$(strip ${LDFLAGS})
+
+$(BUILD)/kernel.bin: \
+	$(BUILD)/kernel/start.o \
+
+	$(shell mkdir -p $(dir $@))
+	ld ${LDFLAGS} $^ -o $@
+
+$(BUILD)/system.bin: $(BUILD)/kernel.bin
+	objcopy --set-section-flags .bss=alloc,load,contents  -O binary $< $@
+
+$(BUILD)/system.map: $(BUILD)/kernel.bin
+	nm $< | sort > $@
+
 $(BUILD)/harddisk.img: \
 	$(BUILD)/boot/boot.bin \
 	$(BUILD)/boot/loader.bin \
+	$(BUILD)/system.bin \
+	$(BUILD)/system.map \
 
 	# create a harddisk image with 16M capacity 
 	yes | bximage -q -hd=16 -func=create -sectsize=512 -imgmode=flat $@
@@ -19,6 +55,12 @@ $(BUILD)/harddisk.img: \
 
 	# write loader.bin to harddisk a page
 	dd if=$(BUILD)/boot/loader.bin of=$@ bs=512 count=8 seek=2 conv=notrunc
+
+	# test system.bin size < 500K, otherwise must modify count in next dd command
+	test -n "$$(find $(BUILD)/system.bin -size -500k)"
+
+	# write system.bin to harddisk
+	dd if=$(BUILD)/system.bin of=$@ bs=512 count=1000 seek=10 conv=notrunc
 
 IMAGES:= $(BUILD)/harddisk.img
 
