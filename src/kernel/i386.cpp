@@ -94,6 +94,38 @@ static void gdt_init()
     asm volatile("lgdt %0\n" ::"m"(gdt_ptr));
 }
 
+
+static _inline void entry_init(page_entry_t *entry, u32 index)
+{
+    *(u64 *)entry = PAGE(index) | 7;
+}
+
+static void paging_init()
+{
+    LOGK("paging init...\n");
+
+    memset((void *)MEMORY_PAGING, 0, PAGE_SIZE * 4);
+    page_entry_t *entry;
+
+    entry = (page_entry_t *)MEMORY_PAGING;
+    entry_init(entry, IDX(MEMORY_PAGING + PAGE_SIZE));
+    entry_init(&entry[511], IDX(MEMORY_PAGING));
+
+    entry = (page_entry_t *)(MEMORY_PAGING + PAGE_SIZE);
+    entry_init(entry, IDX(MEMORY_PAGING + PAGE_SIZE * 2));
+
+    entry = (page_entry_t *)(MEMORY_PAGING + PAGE_SIZE * 2);
+    entry_init(entry, IDX(MEMORY_PAGING + PAGE_SIZE * 3));
+
+    entry = (page_entry_t *)(MEMORY_PAGING + PAGE_SIZE * 3);
+    for (size_t i = 1; i < 512; i++)
+    {
+        entry_init(entry + i, i);
+    }
+
+    asm volatile("movl %%eax, %%cr3\n" ::"a"(MEMORY_PAGING));
+}
+
 _extern void i386_init(u32 magic, u32 addr)
 {
     device::device_init();
@@ -104,4 +136,5 @@ _extern void i386_init(u32 magic, u32 addr)
     printk("onix running in protected mode...\n");
     memory_init(magic, addr);
     gdt_init();
+    paging_init();
 }
