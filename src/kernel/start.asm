@@ -22,6 +22,9 @@ extern i386_init
 section .text
 global _start
 _start:
+    push ebx; ards_count
+    push eax; magic
+
     call i386_init
 
     jmp $; block

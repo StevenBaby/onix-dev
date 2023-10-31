@@ -4,6 +4,9 @@
 #include <stddef.h>
 #include <onix/arch.h>
 
+// kernel magic, for check error
+#define ONIX_MAGIC 0x20220205
+
 #define CONCAT(x, y) x##y
 #define RESERVED_TOKEN(x, y) CONCAT(x, y)
 #define RESERVED RESERVED_TOKEN(reserved, __LINE__)
