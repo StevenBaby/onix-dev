@@ -7,12 +7,17 @@
 #include <onix/memory.h>
 #include <onix/string.h>
 #include <onix/stdlib.h>
+#include <onix/descriptor.h>
 #include <onix/multiboot2.h>
 
 #define LOGK(fmt, args...) DEBUGK(fmt, ##args)
 
 ards_t _aligned(8) ards_table[ARDS_TABLE_LEN];
 u32 ards_count = 0;
+
+#define GDT_SIZE 8
+static _aligned(8) cpu::descriptor_t gdt[GDT_SIZE]; // global descriotpr table
+static _aligned(8) cpu::pointer_t gdt_ptr;          // gdt pointer
 
 static void ards_init(u32 addr)
 {
@@ -62,6 +67,33 @@ static void memory_init(u32 magic, u32 addr)
     }
 }
 
+static void gdt_init()
+{
+    LOGK("gdt init...\n");
+
+    memset(gdt, 0, sizeof(gdt));
+
+    cpu::descriptor_t *desc;
+    desc = gdt + KERNEL_CODE_IDX;
+    desc->segment = 1;   // code
+    desc->long_mode = 1; // long mode
+    desc->present = 1;   // in memory
+    desc->DPL = 0;       // dpl
+    desc->type = 0b1010; // code / n oconforming / readable / no access
+
+    desc = gdt + KERNEL_DATA_IDX;
+    desc->segment = 1;   // data
+    desc->long_mode = 1; // long mode
+    desc->present = 1;   // in memory
+    desc->DPL = 0;       // DPL
+    desc->type = 0b0010; // data / upward / writeable / noaccess
+
+    gdt_ptr.base = (u32)gdt;
+    gdt_ptr.limit = sizeof(gdt) - 1;
+
+    asm volatile("lgdt %0\n" ::"m"(gdt_ptr));
+}
+
 _extern void i386_init(u32 magic, u32 addr)
 {
     device::device_init();
@@ -71,4 +103,5 @@ _extern void i386_init(u32 magic, u32 addr)
 
     printk("onix running in protected mode...\n");
     memory_init(magic, addr);
+    gdt_init();
 }
