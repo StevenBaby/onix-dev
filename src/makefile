@@ -1,7 +1,7 @@
 BUILD:=../build
 SRC:=.
 
-i386=1
+# i386=1
 LOADER_ADDR:=0x1000
 
 ENTRYPOINT:= 0x20000
@@ -51,6 +51,10 @@ $(BUILD)/kernel/i386/%.o: $(SRC)/kernel/%.cpp
 	g++ -m32 $(CPPFLAGS) $(DEBUG) $(INCLUDE) -S $< -o $@.s
 	g++ $(CPPFLAGS) $(DEBUG) $(INCLUDE) -c $@.s -o $@
 
+$(BUILD)/kernel/%.o: $(SRC)/kernel/%.cpp
+	$(shell mkdir -p $(dir $@))
+	g++ $(CPPFLAGS) $(DEBUG) $(INCLUDE) -c $< -o $@
+
 ifdef i386
 LDFLAGS += -m elf_i386
 endif
@@ -62,6 +66,8 @@ LDFLAGS:=$(strip ${LDFLAGS})
 $(BUILD)/kernel.bin: \
 	$(BUILD)/kernel/start.o \
 	$(BUILD)/kernel/i386/i386.o \
+	$(BUILD)/kernel/i386/io.o \
+	$(BUILD)/kernel/io.o \
 
 	$(shell mkdir -p $(dir $@))
 	ld ${LDFLAGS} $^ -o $@

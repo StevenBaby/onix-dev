@@ -2,10 +2,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
-
-#ifdef __i386__
-    asm(".code32\n\t");
-#endif
+#include <onix/arch.h>
 
 #define CONCAT(x, y) x##y
 #define RESERVED_TOKEN(x, y) CONCAT(x, y)
