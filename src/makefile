@@ -85,6 +85,7 @@ I386_MODULES+= $(BUILD)/i386/kernel/none.o
 I386_MODULES+= $(BUILD)/i386/kernel/console.o
 I386_MODULES+= $(BUILD)/i386/kernel/printk.o
 I386_MODULES+= $(BUILD)/i386/kernel/debug.o
+I386_MODULES+= $(BUILD)/i386/kernel/assert.o
 I386_MODULES+= $(BUILD)/i386/lib/string.o
 I386_MODULES+= $(BUILD)/i386/lib/arch64.o
 I386_MODULES+= $(BUILD)/i386/lib/vsprintf.o
@@ -95,6 +96,7 @@ X64_MODULES+= $(BUILD)/x64/kernel/none.o
 X64_MODULES+= $(BUILD)/x64/kernel/console.o
 X64_MODULES+= $(BUILD)/x64/kernel/printk.o
 X64_MODULES+= $(BUILD)/x64/kernel/debug.o
+X64_MODULES+= $(BUILD)/x64/kernel/assert.o
 X64_MODULES+= $(BUILD)/x64/lib/string.o
 X64_MODULES+= $(BUILD)/x64/lib/vsprintf.o
 
