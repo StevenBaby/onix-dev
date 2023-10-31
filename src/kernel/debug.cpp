@@ -8,7 +8,7 @@ namespace arch
 {
     static char buf[1024];
 
-    void debugk(char *file, int line, const char *fmt, ...)
+    void debugk(const char *file, int line, const char *fmt, ...)
     {
         device::device_t *ptr = device::instance(device::DEVICE_SERIAL);
 

@@ -6,7 +6,7 @@
 static char buf[1024];
 
 // 强制阻塞
-static void spin(char *name)
+static void spin(const char *name)
 {
     printk("spinning in %s ...\n", name);
     while (true)

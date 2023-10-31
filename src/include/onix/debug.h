@@ -4,7 +4,7 @@
 
 namespace arch
 {
-    void debugk(char *file, int line, const char *fmt, ...);
+    void debugk(const char *file, int line, const char *fmt, ...);
 }
 
 #define bochs_breakpoint() asm volatile("xchgw %bx, %bx") // bochs magic breakpoint
