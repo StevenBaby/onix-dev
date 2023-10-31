@@ -1,7 +1,7 @@
 BUILD:=../build
 SRC:=.
 
-i386=1
+# i386=1
 
 ifndef i386 
 x64=1
@@ -99,6 +99,7 @@ X64_MODULES+= $(BUILD)/x64/kernel/none.o
 X64_MODULES+= $(BUILD)/x64/kernel/console.o
 X64_MODULES+= $(BUILD)/x64/kernel/serial.o
 X64_MODULES+= $(BUILD)/x64/kernel/printk.o
+X64_MODULES+= $(BUILD)/x64/kernel/main.o
 X64_MODULES+= $(BUILD)/x64/kernel/debug.o
 X64_MODULES+= $(BUILD)/x64/kernel/assert.o
 X64_MODULES+= $(BUILD)/x64/lib/string.o

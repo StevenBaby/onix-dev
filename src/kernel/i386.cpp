@@ -12,6 +12,8 @@
 
 #define LOGK(fmt, args...) DEBUGK(fmt, ##args)
 
+#define MSR_IA32_EFER 0xC0000080
+
 ards_t _aligned(8) ards_table[ARDS_TABLE_LEN];
 u32 ards_count = 0;
 
@@ -126,6 +128,30 @@ static void paging_init()
     asm volatile("movl %%eax, %%cr3\n" ::"a"(MEMORY_PAGING));
 }
 
+static void enable_long_mode()
+{
+    // open pae...
+    LOGK("enable pae...\n");
+    asm volatile(
+        "movl %cr4, %eax\n"
+        "btsl $5, %eax\n"
+        "movl %eax, %cr4\n");
+
+    // enable long mode...
+    LOGK("enable long mode...\n");
+    asm volatile(
+        "rdmsr\n"
+        "btsl $8, %%eax\n"
+        "wrmsr\n" ::"c"(MSR_IA32_EFER));
+
+    // enable paging...
+    LOGK("enable paging...\n");
+    asm volatile(
+        "movl %cr0, %eax\n"
+        "btsl $31, %eax\n"
+        "movl %eax, %cr0\n");
+}
+
 _extern void i386_init(u32 magic, u32 addr)
 {
     device::device_init();
@@ -137,4 +163,5 @@ _extern void i386_init(u32 magic, u32 addr)
     memory_init(magic, addr);
     gdt_init();
     paging_init();
+    enable_long_mode();
 }
