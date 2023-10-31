@@ -2,6 +2,11 @@ BUILD:=../build
 SRC:=.
 
 # i386=1
+
+ifndef i386 
+x64=1
+endif
+
 LOADER_ADDR:=0x1000
 
 ENTRYPOINT:= 0x20000
@@ -46,12 +51,12 @@ CPPFLAGS+= -nostdlib # no standard library
 CPPFLAGS+= -fno-stack-protector # no stack protect
 CPPFLAGS+= -std=c++23
 
-$(BUILD)/kernel/i386/%.o: $(SRC)/kernel/%.cpp
+$(BUILD)/i386/%.o: $(SRC)/%.cpp
 	$(shell mkdir -p $(dir $@))
 	g++ -m32 $(CPPFLAGS) $(DEBUG) $(INCLUDE) -S $< -o $@.s
 	g++ $(CPPFLAGS) $(DEBUG) $(INCLUDE) -c $@.s -o $@
 
-$(BUILD)/kernel/%.o: $(SRC)/kernel/%.cpp
+$(BUILD)/x64/%.o: $(SRC)/%.cpp
 	$(shell mkdir -p $(dir $@))
 	g++ $(CPPFLAGS) $(DEBUG) $(INCLUDE) -c $< -o $@
 
@@ -63,11 +68,22 @@ LDFLAGS+= -static
 LDFLAGS+= -Ttext $(ENTRYPOINT)
 LDFLAGS:=$(strip ${LDFLAGS})
 
-$(BUILD)/kernel.bin: \
-	$(BUILD)/kernel/start.o \
-	$(BUILD)/kernel/i386/i386.o \
-	$(BUILD)/kernel/i386/io.o \
-	$(BUILD)/kernel/io.o \
+
+I386_MODULES+= $(BUILD)/i386/kernel/i386.o
+I386_MODULES+= $(BUILD)/i386/kernel/io.o
+I386_MODULES+= $(BUILD)/i386/lib/string.o
+
+X64_MODULES+= $(BUILD)/x64/kernel/io.o
+X64_MODULES+= $(BUILD)/x64/lib/string.o
+
+KERNEL_MODULES+= $(BUILD)/kernel/start.o
+KERNEL_MODULES+= ${I386_MODULES}
+ifdef x64
+KERNEL_MODULES+= ${X64_MODULES}
+endif
+
+
+$(BUILD)/kernel.bin: ${KERNEL_MODULES}
 
 	$(shell mkdir -p $(dir $@))
 	ld ${LDFLAGS} $^ -o $@
