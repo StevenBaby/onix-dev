@@ -1,7 +1,7 @@
 BUILD:=../build
 SRC:=.
 
-# i386=1
+i386=1
 
 ifndef i386 
 x64=1
@@ -50,11 +50,20 @@ CPPFLAGS+= -fno-pie # no position independent executable
 CPPFLAGS+= -nostdlib # no standard library
 CPPFLAGS+= -fno-stack-protector # no stack protect
 CPPFLAGS+= -std=c++23
+CPPFLAGS+= -fno-exceptions
+CPPFLAGS+= -fno-rtti
+
+
+ifdef x64
+AFLAGS+= -fno-asynchronous-unwind-tables
+else
+AFLAGS+= $(DEBUG)
+endif
 
 $(BUILD)/i386/%.o: $(SRC)/%.cpp
 	$(shell mkdir -p $(dir $@))
-	g++ -m32 $(CPPFLAGS) $(DEBUG) $(INCLUDE) -S $< -o $@.s
-	g++ $(CPPFLAGS) $(DEBUG) $(INCLUDE) -c $@.s -o $@
+	g++ -m32 $(CPPFLAGS) $(AFLAGS) $(INCLUDE) -S $< -o $@.s
+	g++ $(CPPFLAGS) $(AFLAGS) $(INCLUDE) -c $@.s -o $@
 
 $(BUILD)/x64/%.o: $(SRC)/%.cpp
 	$(shell mkdir -p $(dir $@))
@@ -72,6 +81,7 @@ LDFLAGS:=$(strip ${LDFLAGS})
 I386_MODULES+= $(BUILD)/i386/kernel/i386.o
 I386_MODULES+= $(BUILD)/i386/kernel/io.o
 I386_MODULES+= $(BUILD)/i386/lib/string.o
+I386_MODULES+= $(BUILD)/i386/lib/arch64.o
 
 X64_MODULES+= $(BUILD)/x64/kernel/io.o
 X64_MODULES+= $(BUILD)/x64/lib/string.o
