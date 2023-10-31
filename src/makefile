@@ -32,15 +32,36 @@ $(BUILD)/%.o: $(SRC)/%.asm
 	$(shell mkdir -p $(dir $@))
 	nasm $(NASM_FLAGS) $(DEBUG) $< -o $@
 
+INCLUDE:=-I$(SRC)/include
+
+ifdef i386
+CPPFLAGS += -m32
+endif
+
+CPPFLAGS+= -fno-builtin # no builtin functions
+# CFLAGS+= -nostdinc # no standard include files
+CPPFLAGS+= -fno-pic # no position independent code
+CPPFLAGS+= -fno-pie # no position independent executable
+CPPFLAGS+= -nostdlib # no standard library
+CPPFLAGS+= -fno-stack-protector # no stack protect
+CPPFLAGS+= -std=c++23
+
+$(BUILD)/kernel/i386/%.o: $(SRC)/kernel/%.cpp
+	$(shell mkdir -p $(dir $@))
+	g++ -m32 $(CPPFLAGS) $(DEBUG) $(INCLUDE) -S $< -o $@.s
+	g++ $(CPPFLAGS) $(DEBUG) $(INCLUDE) -c $@.s -o $@
+
 ifdef i386
 LDFLAGS += -m elf_i386
 endif
+
 LDFLAGS+= -static
 LDFLAGS+= -Ttext $(ENTRYPOINT)
 LDFLAGS:=$(strip ${LDFLAGS})
 
 $(BUILD)/kernel.bin: \
 	$(BUILD)/kernel/start.o \
+	$(BUILD)/kernel/i386/i386.o \
 
 	$(shell mkdir -p $(dir $@))
 	ld ${LDFLAGS} $^ -o $@
