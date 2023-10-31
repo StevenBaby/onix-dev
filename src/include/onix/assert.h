@@ -1,6 +1,6 @@
 #pragma once
 
-void assertion_failure(char *exp, char *file, char *base, int line);
+#include <onix/types.h>
 
 #define assert(exp) \
     if (exp)        \
@@ -8,4 +8,8 @@ void assertion_failure(char *exp, char *file, char *base, int line);
     else            \
         assertion_failure(#exp, __FILE__, __BASE_FILE__, __LINE__)
 
-void panic(const char *fmt, ...);
+namespace arch
+{
+    void assertion_failure(char *exp, char *file, char *base, int line);
+    void panic(const char *fmt, ...);
+}
