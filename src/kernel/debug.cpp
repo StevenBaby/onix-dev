@@ -10,7 +10,7 @@ namespace arch
 
     void debugk(char *file, int line, const char *fmt, ...)
     {
-        device::device_t *ptr = device::instance(device::DEVICE_CONSOLE);
+        device::device_t *ptr = device::instance(device::DEVICE_SERIAL);
 
         int i = sprintf(buf, "[%s] [%d] ", file, line);
         ptr->write(buf, i);

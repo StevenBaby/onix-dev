@@ -12,6 +12,8 @@ _extern void i386_init()
     device::device_init();
     device::none_init();
     device::console_init();
+    device::serial_init();
+
     LOGK("onix running in protected mode...\n");
     panic("panic....");
 }
