@@ -21,6 +21,8 @@ namespace arch::device
 
     void install(device_t *dev);
     device_t *instance(device_type type, int idx = 0);
+
     void device_init();
     void none_init();
+    void console_init();
 }
