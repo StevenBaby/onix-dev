@@ -21,7 +21,5 @@ static device::none_t none;
 
 void device::none_init()
 {
-    none_t var;
-    memcpy(&none, &var, sizeof(none_t));
-    device::install(&none);
+    device::install(new (&none) none_t());
 }

@@ -91,18 +91,17 @@ static device::serial_t serials[2];
 
 void device::serial_init()
 {
+    u16 iobase;
     for (size_t i = 0; i < 2; i++)
     {
-        serial_t *ptr = &serials[i];
-        u16 iobase;
         if (!i)
             iobase = COM1_IOBASE;
         else
             iobase = COM2_IOBASE;
-        serial_t var(iobase);
-        if (var.type == DEVICE_SERIAL)
+
+        serial_t *ptr = new (&serials[i]) serial_t(iobase);
+        if (ptr->type == DEVICE_SERIAL)
         {
-            memcpy(ptr, &var, sizeof(serial_t));
             device::install(ptr);
         }
     }

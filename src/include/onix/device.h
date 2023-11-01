@@ -17,6 +17,7 @@ namespace arch::device
 
         virtual int write(char *data, size_t size);
         virtual int read(char *data, size_t size);
+        inline void *operator new(size_t, void *ptr) { return ptr; }
     };
 
     void install(device_t *dev);

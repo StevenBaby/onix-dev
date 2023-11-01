@@ -705,7 +705,6 @@ static device::console_t console;
 
 void device::console_init()
 {
-    console_t var;
-    memcpy(&console, &var, sizeof(console_t));
-    device::install(&console);
+    auto ptr = new(&console) console_t();
+    device::install(ptr);
 }
