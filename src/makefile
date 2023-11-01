@@ -9,7 +9,7 @@ endif
 
 LOADER_ADDR:=0x1000
 MULTIBOOT2:=0x8000
-ENTRYPOINT:=$(shell python -c "print(f'0x{$(MULTIBOOT2) + 0x8000:x}')")
+ENTRYPOINT:=$(shell python -c "print(f'0x{$(MULTIBOOT2) + 0x18000:x}')")
 ONIX_MAGIC:= 0x20220205
 
 DEBUG:=-g
@@ -53,6 +53,7 @@ CPPFLAGS+= -fno-stack-protector # no stack protect
 CPPFLAGS+= -std=c++23
 CPPFLAGS+= -fno-exceptions
 CPPFLAGS+= -fno-rtti
+CPPFLAGS+= -fno-use-cxa-atexit
 
 
 ifdef x64
@@ -100,8 +101,10 @@ X64_MODULES+= $(BUILD)/x64/kernel/console.o
 X64_MODULES+= $(BUILD)/x64/kernel/serial.o
 X64_MODULES+= $(BUILD)/x64/kernel/printk.o
 X64_MODULES+= $(BUILD)/x64/kernel/main.o
+X64_MODULES+= $(BUILD)/x64/kernel/allocator.o
 X64_MODULES+= $(BUILD)/x64/kernel/debug.o
 X64_MODULES+= $(BUILD)/x64/kernel/assert.o
+X64_MODULES+= $(BUILD)/x64/kernel/test.o
 X64_MODULES+= $(BUILD)/x64/lib/string.o
 X64_MODULES+= $(BUILD)/x64/lib/vsprintf.o
 
