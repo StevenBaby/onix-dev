@@ -81,11 +81,13 @@ LDFLAGS:=$(strip ${LDFLAGS})
 I386_MODULES+= $(BUILD)/i386/kernel/i386.o
 I386_MODULES+= $(BUILD)/i386/kernel/io.o
 I386_MODULES+= $(BUILD)/i386/kernel/device.o
+I386_MODULES+= $(BUILD)/i386/kernel/none.o
 I386_MODULES+= $(BUILD)/i386/lib/string.o
 I386_MODULES+= $(BUILD)/i386/lib/arch64.o
 
 X64_MODULES+= $(BUILD)/x64/kernel/io.o
 X64_MODULES+= $(BUILD)/x64/kernel/device.o
+X64_MODULES+= $(BUILD)/x64/kernel/none.o
 X64_MODULES+= $(BUILD)/x64/lib/string.o
 
 KERNEL_MODULES+= $(BUILD)/kernel/start.o
