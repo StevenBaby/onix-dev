@@ -26,4 +26,5 @@ namespace arch::device
     void device_init();
     void none_init();
     void console_init();
+    void serial_init();
 }
