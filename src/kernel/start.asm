@@ -1,8 +1,10 @@
 [bits 32]
 
+extern i386_init
+
 section .text
 global _start
 _start:
-    mov byte [0xb8000], 'K'
+    call i386_init
 
     jmp $; block
