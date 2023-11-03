@@ -49,9 +49,9 @@ read_kernel:
 
     sub esp, 4 * 3; three variable
     mov dword [esp], 0; read bytes
-    mov dword [esp + 4], 10         ; ecx start sector
-    mov dword [esp + 8], ENTRYPOINT ; edi target memory
-    BLOCK_SIZE equ 100              ; sector count for read block
+    mov dword [esp + 4], 10             ; ecx start sector
+    mov dword [esp + 8], TARGET_MEMORY  ; edi target memory
+    BLOCK_SIZE equ 100                  ; sector count for read block
 
 .read_block: 
 
@@ -167,7 +167,7 @@ protected_mode:
     mov es, ax
     mov fs, ax
     mov gs, ax
-    mov ss, ax; 
+    mov ss, ax;
 
     mov esp, ENTRYPOINT; update stack top
 
@@ -175,6 +175,7 @@ protected_mode:
     mov ebx, ards_count
 
     ; jmp to kernel
+    ; xchg bx, bx
     jmp code_selector:ENTRYPOINT
 
     ud2; no way to there, error

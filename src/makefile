@@ -8,8 +8,8 @@ x64=1
 endif
 
 LOADER_ADDR:=0x1000
-
-ENTRYPOINT:= 0x20000
+MULTIBOOT2:=0x18000
+ENTRYPOINT:=$(shell python -c "print(f'0x{$(MULTIBOOT2) + 0x8000:x}')")
 ONIX_MAGIC:= 0x20220205
 
 DEBUG:=-g
@@ -20,6 +20,7 @@ $(BUILD)/boot/%.bin: $(SRC)/boot/%.asm
 
 LOADER_FLAGS+= -DKERNEL_SIZE=$$(stat -c%s "$(BUILD)/system.bin")
 LOADER_FLAGS+= -DLOADER_ADDR=$(LOADER_ADDR)
+LOADER_FLAGS+= -DTARGET_MEMORY=$(MULTIBOOT2)
 LOADER_FLAGS+= -DENTRYPOINT=$(ENTRYPOINT)
 LOADER_FLAGS+= -DONIX_MAGIC=$(ONIX_MAGIC)
 
@@ -75,6 +76,7 @@ endif
 
 LDFLAGS+= -static
 LDFLAGS+= -Ttext $(ENTRYPOINT)
+LDFLAGS+= -section-start=.multiboot2=$(MULTIBOOT2)
 LDFLAGS:=$(strip ${LDFLAGS})
 
 
@@ -150,3 +152,4 @@ clean:
 
 include $(SRC)/utils/bochs.mk
 include $(SRC)/utils/qemu.mk
+include $(SRC)/utils/cdrom.mk

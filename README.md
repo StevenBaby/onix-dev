@@ -19,6 +19,12 @@ detect memory
 
 - https://wiki.osdev.org/Detecting_Memory_(x86)
 
+multiboot2
+
+    sudo pacman -S grub
+    sudo pacman -S xorriso
+    sudo pacman -S mtools
+
 ### gcc options
 
     sudo pacman -S lib32-glibc
