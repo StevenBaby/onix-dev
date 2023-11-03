@@ -11,5 +11,7 @@ namespace arch
         {
             video[i * 2] = message[i];
         }
+        u64 i = 100000;
+        u64 b = i / 100;
     }
 }
