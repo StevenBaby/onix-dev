@@ -82,6 +82,8 @@ LDFLAGS:=$(strip ${LDFLAGS})
 
 I386_MODULES+= $(BUILD)/i386/kernel/i386.o
 I386_MODULES+= $(BUILD)/i386/kernel/io.o
+I386_MODULES+= $(BUILD)/i386/kernel/chksum.o
+I386_MODULES+= $(BUILD)/i386/kernel/kernel.o
 I386_MODULES+= $(BUILD)/i386/kernel/device.o
 I386_MODULES+= $(BUILD)/i386/kernel/none.o
 I386_MODULES+= $(BUILD)/i386/kernel/console.o
@@ -94,6 +96,7 @@ I386_MODULES+= $(BUILD)/i386/lib/arch64.o
 I386_MODULES+= $(BUILD)/i386/lib/vsprintf.o
 
 X64_MODULES+= $(BUILD)/x64/kernel/io.o
+X64_MODULES+= $(BUILD)/x64/kernel/chksum.o
 X64_MODULES+= $(BUILD)/x64/kernel/device.o
 X64_MODULES+= $(BUILD)/x64/kernel/none.o
 X64_MODULES+= $(BUILD)/x64/kernel/console.o
@@ -141,6 +144,8 @@ $(BUILD)/harddisk.img: \
 
 	# write system.bin to harddisk
 	dd if=$(BUILD)/system.bin of=$@ bs=512 count=1000 seek=10 conv=notrunc
+
+	python $(SRC)/utils/chksum.py
 
 IMAGES:= $(BUILD)/harddisk.img
 
