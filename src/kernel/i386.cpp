@@ -1,4 +1,5 @@
 #include <onix/device.h>
+#include <onix/printk.h>
 
 namespace arch
 {
@@ -7,5 +8,6 @@ namespace arch
         device::device_init();
         device::none_init();
         device::console_init();
+        printk("onix running in protected mode...\n");
     }
 }
