@@ -1,7 +1,11 @@
 BUILD:=../build
 SRC:=.
 
-i386=1
+# i386=1
+ifndef i386 
+x64=1
+endif
+
 LOADER_ADDR:=0x1000
 
 ENTRYPOINT:= 0x20000
@@ -51,6 +55,10 @@ $(BUILD)/i386/%.o: $(SRC)/%.cpp
 	g++ -m32 $(CPPFLAGS) $(AFLAGS) $(INCLUDE) -S $< -o $@.s
 	g++ $(CPPFLAGS) $(AFLAGS) $(INCLUDE) -c $@.s -o $@
 
+$(BUILD)/x64/%.o: $(SRC)/%.cpp
+	$(shell mkdir -p $(dir $@))
+	g++ $(CPPFLAGS) $(DEBUG) $(INCLUDE) -c $< -o $@
+
 ifdef i386
 LDFLAGS += -m elf_i386
 endif
@@ -60,9 +68,15 @@ LDFLAGS+= -Ttext $(ENTRYPOINT)
 LDFLAGS:=$(strip ${LDFLAGS})
 
 I386_MODULES+= $(BUILD)/i386/kernel/i386.o
+I386_MODULES+= $(BUILD)/i386/kernel/io.o
+
+X64_MODULES+= $(BUILD)/x64/kernel/io.o
 
 KERNEL_MODULES+= $(BUILD)/kernel/start.o
 KERNEL_MODULES+= ${I386_MODULES}
+ifdef x64
+KERNEL_MODULES+= ${X64_MODULES}
+endif
 
 $(BUILD)/kernel.bin: ${KERNEL_MODULES}
 
