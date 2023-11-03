@@ -1,17 +1,9 @@
-#include <onix/types.h>
-
-static const char message[] = "Onix running in protected mode...";
+#include <onix/device.h>
 
 namespace arch
 {
     _extern void i386_init()
     {
-        char *video = (char *)0xb8000;
-        for (int i = 0; i < sizeof(message); i++)
-        {
-            video[i * 2] = message[i];
-        }
-        u64 i = 100000;
-        u64 b = i / 100;
+        device::device_init();
     }
 }
