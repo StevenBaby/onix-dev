@@ -30,3 +30,13 @@ QEMU_EFI_FLAGS+= -drive file=fat:rw:$(BUILD)/esp,index=0,format=vvfat
 .PHONY: qemuefi
 qemuefi: $(BUILD)/esp/EFI/BOOT/BOOTX64.EFI
 	$(QEMU) $(QEMU_EFI_FLAGS)
+
+
+USBDEV:= /dev/sdb1
+
+.PHONY: usbefi
+usbefi: $(BUILD)/esp/EFI/BOOT/BOOTX64.EFI $(USBDEV)
+	sudo mount $(USBDEV) /mnt
+	sudo mkdir -p /mnt/EFI/BOOT
+	sudo cp $< /mnt/EFI/BOOT/BOOTX64.EFI
+	sudo umount /mnt
